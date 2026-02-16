@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Battle Frontier Tracker</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #0b1220;
+  color: #f8fafc;
+  margin: 0;
+  padding: 20px;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 35px;
+}
+
+header img {
+  height: 70px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 28px;
+  color: #fde047;
+  letter-spacing: 2px;
+}
+
+.frontier {
+  background: #111827;
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 30px;
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 20px;
+  border: 2px solid #facc15;
+}
+
+.frontier img.building {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.info h2 {
+  margin: 0 0 10px 0;
+  color: #fde047;
+}
+
+.leader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.leader img {
+  width: 56px;
+}
+
+/* CONTENEDOR CONTADOR + OBJETIVOS */
+.progress-row {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  flex-wrap: wrap;
+}
+
+.counter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.counter button {
+  font-size: 24px;
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  background: #facc15;
+  color: #000;
+  font-weight: bold;
+}
+
+.counter span {
+  font-size: 22px;
+  min-width: 120px;
+  text-align: center;
+}
+
+.reset {
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  height: 48px;
+  min-width: 90px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* BLOQUE OBJETIVOS */
+.objectives {
+  background: #020617;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+  min-width: 200px;
+}
+
+.objectives div {
+  margin-bottom: 4px;
+}
+
+.objectives span {
+  font-weight: bold;
+}
+
+.status {
+  font-size: 14px;
+  margin: 8px 0 10px 0;
+  color: #e5e7eb;
+}
+
+.badges {
+  display: flex;
+  gap: 30px;
+  margin-top: 10px;
+}
+
+.badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.badge img {
+  width: 48px;
+}
+
+input[type="checkbox"] {
+  transform: scale(1.6);
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <img src="https://archives.bulbagarden.net/media/upload/f/f0/EmeraldBFLogo.png">
+  <h1>BATTLE FRONTIER TRACKER</h1>
+</header>
+
+<div id="app"></div>
+
+<script>
+const frontiers = [
+  { id:"pike", name:"Battle Pike", max:140, leader:"Lucy",
+    silverReq:"28 salas", goldReq:"140 salas",
+    building:"https://images.wikidexcdn.net/mwuploads/wikidex/f/fd/latest/20180130200707/Sierpe_Batalla.png",
+    leaderImg:"https://images.wikidexcdn.net/mwuploads/wikidex/a/a0/latest/20081018194211/Fortunia_E.png",
+    silver:"https://images.wikidexcdn.net/mwuploads/wikidex/3/37/latest/20090713033445/S%C3%ADmbolo_de_la_Fortuna_Plata.png",
+    gold:"https://images.wikidexcdn.net/mwuploads/wikidex/b/bf/latest/20090615184409/S%C3%ADmbolo_de_la_Fortuna_Oro.png"
+  },
+  { id:"dome", name:"Battle Dome", max:10, leader:"Tucker",
+    silverReq:"5 torneos", goldReq:"10 torneos",
+    building:"https://images.wikidexcdn.net/mwuploads/wikidex/c/ce/latest/20081228101657/C%C3%BApula_Batalla.png",
+    leaderImg:"https://images.wikidexcdn.net/mwuploads/wikidex/b/b6/latest/20081018194213/Tactio_E.png",
+    silver:"https://images.wikidexcdn.net/mwuploads/wikidex/4/44/latest/20090713033451/S%C3%ADmbolo_de_la_T%C3%A1ctica_Plata.png",
+    gold:"https://images.wikidexcdn.net/mwuploads/wikidex/a/af/latest/20090615184401/S%C3%ADmbolo_de_la_T%C3%A1ctica_Oro.png"
+  },
+  { id:"factory", name:"Battle Factory", max:6, leader:"Noland",
+    silverReq:"3 torneos", goldReq:"6 torneos",
+    building:"https://images.wikidexcdn.net/mwuploads/wikidex/4/42/latest/20081228101659/F%C3%A1brica_Batalla.png",
+    leaderImg:"https://images.wikidexcdn.net/mwuploads/wikidex/3/3b/latest/20081018194256/Sabino_E.png",
+    silver:"https://images.wikidexcdn.net/mwuploads/wikidex/b/bc/latest/20090713033442/S%C3%ADmbolo_del_Saber_Plata.png",
+    gold:"https://images.wikidexcdn.net/mwuploads/wikidex/a/ab/latest/20090615184331/S%C3%ADmbolo_del_Saber_Oro.png"
+  },
+  { id:"arena", name:"Battle Arena", max:56, leader:"Greta",
+    silverReq:"27 victorias", goldReq:"56 victorias",
+    building:"https://images.wikidexcdn.net/mwuploads/wikidex/d/d5/latest/20081228101658/Dojo_Batalla.png",
+    leaderImg:"https://images.wikidexcdn.net/mwuploads/wikidex/2/27/latest/20081018194119/Coro_E.png",
+    silver:"https://images.wikidexcdn.net/mwuploads/wikidex/3/35/latest/20090713033459/S%C3%ADmbolo_del_Coraje_Plata.png",
+    gold:"https://images.wikidexcdn.net/mwuploads/wikidex/4/4f/latest/20090615184430/S%C3%ADmbolo_del_Coraje_Oro.png"
+  },
+  { id:"palace", name:"Battle Palace", max:6, leader:"Spenser",
+    silverReq:"3 torneos", goldReq:"6 torneos",
+    building:"https://images.wikidexcdn.net/mwuploads/wikidex/d/d0/latest/20081228101701/Palacio_Batalla.png",
+    leaderImg:"https://images.wikidexcdn.net/mwuploads/wikidex/d/d9/latest/20081018194209/Aniceto_E.png",
+    silver:"https://images.wikidexcdn.net/mwuploads/wikidex/0/09/latest/20090713033448/S%C3%ADmbolo_del_%C3%81nimo_Plata.png",
+    gold:"https://images.wikidexcdn.net/mwuploads/wikidex/a/a8/latest/20090615184414/S%C3%ADmbolo_del_%C3%81nimo_Oro.png"
+  },
+  { id:"pyramid", name:"Battle Pyramid", max:70, leader:"Brandon",
+    silverReq:"Piso 21", goldReq:"Piso 70",
+    building:"https://images.wikidexcdn.net/mwuploads/wikidex/6/66/latest/20190424173953/Pir%C3%A1mide_Batalla.png",
+    leaderImg:"https://images.wikidexcdn.net/mwuploads/wikidex/9/9d/latest/20081018194117/Valente_E.png",
+    silver:"https://images.wikidexcdn.net/mwuploads/wikidex/1/1f/latest/20090713033436/S%C3%ADmbolo_de_la_Valent%C3%ADa_Plata.png",
+    gold:"https://images.wikidexcdn.net/mwuploads/wikidex/8/83/latest/20090615184423/S%C3%ADmbolo_de_la_Valent%C3%ADa_Oro.png"
+  },
+  { id:"tower", name:"Battle Tower", max:70, leader:"Anabel",
+    silverReq:"35 victorias", goldReq:"70 victorias",
+    building:"https://images.wikidexcdn.net/mwuploads/wikidex/4/4c/latest/20081221204221/Torre_Batalla.png",
+    leaderImg:"https://images.wikidexcdn.net/mwuploads/wikidex/c/cd/latest/20081018194122/Destra_E.png",
+    silver:"https://images.wikidexcdn.net/mwuploads/wikidex/d/db/latest/20090713033433/S%C3%ADmbolo_de_la_Destreza_Plata.png",
+    gold:"https://images.wikidexcdn.net/mwuploads/wikidex/0/0f/latest/20090615184419/S%C3%ADmbolo_de_la_Destreza_Oro.png"
+  }
+];
+
+const app = document.getElementById("app");
+
+frontiers.forEach(f => {
+  const v = parseInt(localStorage.getItem(f.id+"_count") || 0);
+  const s = localStorage.getItem(f.id+"_silver") === "true";
+  const g = localStorage.getItem(f.id+"_gold") === "true";
+
+  const d = document.createElement("div");
+  d.className = "frontier";
+  d.innerHTML = `
+    <img class="building" src="${f.building}">
+    <div class="info">
+      <h2>${f.name}</h2>
+      <div class="leader"><img src="${f.leaderImg}"><strong>${f.leader}</strong></div>
+
+      <div class="progress-row">
+        <div class="counter">
+          <button onclick="chg('${f.id}',-1,${f.max})">−</button>
+          <span id="${f.id}_count">${v} / ${f.max}</span>
+          <button onclick="chg('${f.id}',1,${f.max})">+</button>
+          <button class="reset" onclick="rst('${f.id}',${f.max})">RESET</button>
+        </div>
+
+        <div class="objectives">
+          <div>🥈 <span>Plata:</span> ${f.silverReq}</div>
+          <div>🥇 <span>Oro:</span> ${f.goldReq}</div>
+        </div>
+      </div>
+
+      <div class="status" id="${f.id}_status"></div>
+
+      <div class="badges">
+        <label class="badge"><input type="checkbox" ${s?"checked":""} onchange="sv('${f.id}','silver',this.checked)"><img src="${f.silver}"></label>
+        <label class="badge"><input type="checkbox" ${g?"checked":""} onchange="sv('${f.id}','gold',this.checked)"><img src="${f.gold}"></label>
+      </div>
+    </div>`;
+  app.appendChild(d);
+  updateStatus(f.id, f.max, f.leader);
+});
+
+function updateStatus(id, max, leader) {
+  const v = parseInt(localStorage.getItem(id+"_count") || 0);
+  const el = document.getElementById(id+"_status");
+  if (v >= max) {
+    el.innerText = `¡Ya podés enfrentarte a ${leader}!`;
+    el.style.color = "#4ade80";
+  } else {
+    el.innerText = `Faltan ${max - v} victorias para enfrentarte a ${leader}`;
+    el.style.color = "#e5e7eb";
+  }
+}
+
+function chg(id, d, m) {
+  let v = parseInt(localStorage.getItem(id+"_count") || 0);
+  v = Math.max(0, Math.min(m, v + d));
+  localStorage.setItem(id+"_count", v);
+  document.getElementById(id+"_count").innerText = v + " / " + m;
+  const f = frontiers.find(x => x.id === id);
+  updateStatus(id, m, f.leader);
+}
+
+function rst(id, m) {
+  localStorage.setItem(id+"_count", 0);
+  document.getElementById(id+"_count").innerText = "0 / " + m;
+  const f = frontiers.find(x => x.id === id);
+  updateStatus(id, m, f.leader);
+}
+
+function sv(id, t, v) {
+  localStorage.setItem(id+"_"+t, v);
+}
+</script>
+
+</body>
+</html>
